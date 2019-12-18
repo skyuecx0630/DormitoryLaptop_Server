@@ -2,6 +2,7 @@ import Joi from 'joi';
 import crypto from 'crypto';
 import { user } from 'models';
 import { generateToken, decodeToken } from 'utils/token';
+import { sendRegisterEmail } from 'utils/sendMail';
 
 
 import dotenv from 'dotenv';
@@ -49,6 +50,16 @@ export const Login = async (ctx) => {
         ctx.status = 400;
         ctx.body = {
             "msg": "아이디나 비밀번호를 확인해 주세요."
+        }
+        return;
+    }
+
+    //인증된 계정만 로그인
+    if (founded.validation == false) {
+        console.log(`Login - 인증되지 않은 계정입니다.`);
+        ctx.status = 400;
+        ctx.body = {
+            "msg": "이메일 인증 진행 후 로그인해 주세요."
         }
         return;
     }
@@ -102,6 +113,23 @@ export const Register = async (ctx) => {
         return;
     }
 
+    //이메일 인증 키 생성
+    let verifycode;
+    let key_for_verify;
+
+    do {
+        let key_one = crypto.randomBytes(256).toString('hex').substr(100, 5);
+        let key_two = crypto.randomBytes(256).toString('base64').substr(50, 5);
+        key_for_verify = key_one + key_two;
+        verifycode = await user.findAll({
+            where: {
+                "key_for_verify": key_for_verify
+            }
+        });
+    } while (verifycode.length);
+
+    sendRegisterEmail(ctx.request.body.email, key_for_verify);
+
     //비밀번호 해쉬 후 계정 생성
     const password = crypto.createHmac('sha256', process.env.Password_KEY).update(ctx.request.body.password).digest('hex');
 
@@ -110,12 +138,32 @@ export const Register = async (ctx) => {
         "password": password,
         "name": "tester1",
         "authority": "student",
-        "key_for_verify": verifycode
+        "key_for_verify": key_for_verify
     });
 
-    console.log(`Register - 새로운 회원이 저장되었습니다. / 이메일 : ${ctx.request.body.email}`);
-
     ctx.status = 200;
-
 }
 
+export const ConfirmEmail = async (ctx) => {
+    const key_for_verify = ctx.query.key;
+
+    const account = await user.findOne({
+        where: {
+            "key_for_verify": key_for_verify
+        }
+    });
+
+    if(account == null){
+        ctx.status = 400;
+        ctx.body = {
+            "msg" : "존재하지 않는 인증키입니다."
+        }
+        return;
+    }
+
+    await account.update({
+        "validation": true
+    });
+
+    ctx.status = 200;
+}
