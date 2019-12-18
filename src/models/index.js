@@ -2,7 +2,6 @@ import Sequelize from 'sequelize';
 import path from 'path';
 
 import { User } from './User';
-import { AuthCode } from './AuthCode';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['dormitory'];
 
@@ -14,6 +13,5 @@ const sequelize = new Sequelize(
 )
 
 const user = User(sequelize, Sequelize);
-const auth_code = AuthCode(sequelize, Sequelize);
 
-export { sequelize, Sequelize, user, auth_code };
+export { sequelize, Sequelize, user };
