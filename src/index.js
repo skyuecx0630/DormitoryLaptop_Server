@@ -7,7 +7,8 @@ import helmet from 'koa-helmet';
 import jwt from 'koa-jwt';
 import winston from 'winston';
 import cors from '@koa/cors';
-import routes from './routes'
+import routes from 'routes'
+import errorHandler from 'middlewares/error-handler';
 
 import { logger } from './logger';
 import { sequelize } from './models';
@@ -20,6 +21,7 @@ const port = process.env.PORT || 4000;
 app.use(helmet())
     .use(cors())
     .use(logger(winston))
+    .use(errorHandler())
     .use(bodyParser())
     .use(jwt({ secret: process.env.JWT_KEY }).unless({ path: [/^\/auth/] }))
     .use(routes.routes()).use(routes.allowedMethods())

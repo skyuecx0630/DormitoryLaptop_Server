@@ -1,8 +1,11 @@
 import Joi from 'joi';
 import crypto from 'crypto';
 import { user } from 'models';
-import { generateToken, decodeToken } from 'utils/token';
+import { generateToken } from 'utils/token';
 import { sendRegisterEmail } from 'utils/sendMail';
+import {
+    INVALID_REQUEST_BODY_FORMAT, EXISTING_EMAIL, INVALID_ACCOUNT, UNVERIFIED_ACCOUNT, INVALID_REQUEST_DATA
+} from 'errors/error';
 
 
 import dotenv from 'dotenv';
@@ -18,12 +21,7 @@ export const Login = async (ctx) => {
     const Result = Joi.validate(ctx.request.body, bodyFormat);
 
     if (Result.error) {
-        console.log(`Login - Joi 형식 에러`);
-        ctx.status = 400;
-        ctx.body = {
-            "error": "001"
-        }
-        return;
+        throw INVALID_REQUEST_BODY_FORMAT;
     }
 
     //이메일 검사
@@ -34,34 +32,19 @@ export const Login = async (ctx) => {
     });
 
     if (founded == null) {
-        console.log(`Login - 존재하지 않는 계정입니다. / 입력된 아이디 : ${ctx.request.body.id}`);
-        ctx.status = 400;
-        ctx.body = {
-            "msg": "아이디나 비밀번호를 확인해 주세요."
-        }
-        return;
+        throw INVALID_ACCOUNT;
     }
 
     //비밀번호 검사
     const input = crypto.createHmac('sha256', process.env.PASSWORD_KEY).update(ctx.request.body.password).digest('hex');
 
     if (founded.password != input) {
-        console.log(`Login - 비밀번호를 틀렸습니다.`);
-        ctx.status = 400;
-        ctx.body = {
-            "msg": "아이디나 비밀번호를 확인해 주세요."
-        }
-        return;
+        throw INVALID_ACCOUNT;
     }
 
     //인증된 계정만 로그인
     if (founded.validation == false) {
-        console.log(`Login - 인증되지 않은 계정입니다.`);
-        ctx.status = 400;
-        ctx.body = {
-            "msg": "이메일 인증 진행 후 로그인해 주세요."
-        }
-        return;
+        throw UNVERIFIED_ACCOUNT;
     }
 
     //jwt 발행
@@ -88,12 +71,7 @@ export const Register = async (ctx) => {
     const result = Joi.validate(ctx.request.body, bodyFormat)
 
     if (result.error) {
-        console.log("Register - Joi 형식 에러")
-        ctx.status = 400;
-        ctx.body = {
-            "error": "001"
-        }
-        return;
+        throw INVALID_REQUEST_BODY_FORMAT;
     }
 
     //중복 이메일 검사
@@ -104,13 +82,7 @@ export const Register = async (ctx) => {
     });
 
     if (existEmail != null) {
-        console.log(`Register - 이미 존재하는 이메일입니다. / 입력된 이메일 : ${ctx.request.body.email}`);
-
-        ctx.status = 400;
-        ctx.body = {
-            "msg": "이미 존재하는 이메일입니다."
-        }
-        return;
+        throw EXISTING_EMAIL;
     }
 
     //이메일 인증 키 생성
@@ -154,11 +126,7 @@ export const ConfirmEmail = async (ctx) => {
     });
 
     if(account == null){
-        ctx.status = 400;
-        ctx.body = {
-            "msg" : "존재하지 않는 인증키입니다."
-        }
-        return;
+        throw INVALID_REQUEST_DATA;
     }
 
     await account.update({
