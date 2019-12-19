@@ -4,11 +4,11 @@ dotenv.config();
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import helmet from 'koa-helmet';
-import jwt from 'koa-jwt';
 import winston from 'winston';
 import cors from '@koa/cors';
 import routes from 'routes'
 import errorHandler from 'middlewares/error-handler';
+import authenticater from './middlewares/authenticater';
 
 import { logger } from './logger';
 import { sequelize } from './models';
@@ -23,7 +23,7 @@ app.use(helmet())
     .use(logger(winston))
     .use(errorHandler())
     .use(bodyParser())
-    .use(jwt({ secret: process.env.JWT_KEY }).unless({ path: [/^\/auth/] }))
+    .use(authenticater().unless({ path: [/^\/auth/] }))
     .use(routes.routes()).use(routes.allowedMethods())
 
 app.listen(port, () => {
