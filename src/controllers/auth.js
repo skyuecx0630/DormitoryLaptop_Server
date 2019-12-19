@@ -25,32 +25,32 @@ export const Login = async (ctx) => {
     }
 
     //이메일 검사
-    const founded = await user.findOne({
+    const account = await user.findOne({
         where: {
             email: ctx.request.body.email,
             authority: ctx.params.authority
         }
     });
 
-    if (founded == null) {
+    if (account == null) {
         throw INVALID_ACCOUNT;
     }
 
     //비밀번호 검사
     const input = crypto.createHmac('sha256', process.env.PASSWORD_KEY).update(ctx.request.body.password).digest('hex');
 
-    if (founded.password != input) {
+    if (account.password != input) {
         throw INVALID_ACCOUNT;
     }
 
     //인증된 계정만 로그인
-    if (founded.validation == false) {
+    if (account.validation == false) {
         throw UNVERIFIED_ACCOUNT;
     }
 
     //jwt 발행
     const payload = {
-        user_code: founded.user_code
+        email: account.email
     };
 
     let token = null;
