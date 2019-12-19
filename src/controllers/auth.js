@@ -110,6 +110,8 @@ export const Register = async (ctx) => {
         "email": ctx.request.body.email,
         "password": password,
         "name": "tester1",
+        "grade": 0,
+        "class": 0,
         "authority": ctx.params.authority,
         "key_for_verify": key_for_verify
     });

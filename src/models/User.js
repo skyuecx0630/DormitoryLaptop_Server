@@ -14,6 +14,14 @@ export const User = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        grade: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        class: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         dormitory_point: {
             type: DataTypes.INTEGER,
             defaultValue: 0
