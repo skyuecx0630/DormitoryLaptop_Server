@@ -27,7 +27,8 @@ export const Login = async (ctx) => {
     //이메일 검사
     const founded = await user.findOne({
         where: {
-            email: ctx.request.body.email
+            email: ctx.request.body.email,
+            authority: ctx.params.authority
         }
     });
 
@@ -109,7 +110,7 @@ export const Register = async (ctx) => {
         "email": ctx.request.body.email,
         "password": password,
         "name": "tester1",
-        "authority": "student",
+        "authority": ctx.params.authority,
         "key_for_verify": key_for_verify
     });
 

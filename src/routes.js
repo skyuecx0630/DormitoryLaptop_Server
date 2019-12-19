@@ -3,8 +3,8 @@ import { Register, Login, ConfirmEmail } from './controllers/auth';
 
 const auth = new Router;
 
-auth.post('/register', Register);
-auth.post('/login', Login);
+auth.post('/register/:authority', Register);
+auth.post('/login/:authority', Login);
 auth.get('/verification', ConfirmEmail);
 
 
