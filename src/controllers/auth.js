@@ -50,7 +50,7 @@ export const Login = async (ctx) => {
 
     //jwt 발행
     const payload = {
-        email: account.email
+        user_id: account.user_id
     };
 
     let token = null;

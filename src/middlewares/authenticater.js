@@ -15,7 +15,7 @@ module.exports = () => {
     
             const account = await user.findOne({
                 where: {
-                    email: decoded.email
+                    user_id: decoded.user_id
                 }
             })
 
