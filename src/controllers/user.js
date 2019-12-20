@@ -2,7 +2,7 @@ import { generateToken } from "utils/token"
 
 export const RefreshToken = async (ctx) => {
     const payload = {
-        email: ctx.user.email
+        user_id: ctx.user.user_id
     }
 
     const token = await generateToken(payload)
