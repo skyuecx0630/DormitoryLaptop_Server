@@ -8,7 +8,18 @@ export const RefreshToken = async (ctx) => {
     const token = await generateToken(payload)
 
     ctx.status = 200;
+    
+    UserInfo(ctx);
+    ctx.body.token = token;
+}
+
+export const UserInfo = async (ctx) => {
+    ctx.status = 200;
+
     ctx.body = {
-        token: token
+        "name": ctx.user.name,
+        "grade": ctx.user.grade,
+        "class": ctx.user.class,
+        "point": ctx.user.dormitory_point,
     }
 }
