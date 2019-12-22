@@ -88,3 +88,21 @@ export const BorrowLaptop = async (ctx) => {
     ctx.status = 200;
 }
 
+export const CancelLaptop = async (ctx) => {
+    //대여한 유저인지 확인
+    const today = new Date().toISOString().slice(0, 10);
+
+    const seat = await laptop.findOne({
+        where: {
+            user_id : ctx.user.user_id,
+            created_at : today
+        }
+    })
+
+    if (seat == null) {
+        throw NOT_BROUGHT;
+    }
+
+    await seat.destroy();
+    ctx.status = 200;
+}
