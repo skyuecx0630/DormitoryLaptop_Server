@@ -1,6 +1,5 @@
 import Joi from 'joi';
-import { Sequelize } from 'sequelize';
-import { laptop, laptop_block, sequelize } from 'models';
+import { laptop, laptop_block } from 'models';
 import {
     INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT
 } from 'errors/error'
@@ -86,6 +85,75 @@ export const BorrowLaptop = async (ctx) => {
     })
     
     ctx.status = 200;
+}
+
+export const ChangeLaptop = async (ctx) => {
+    //Joi 형식 검사
+    const bodyFormat = Joi.object().keys({
+        room: Joi.string().required(),
+        seat: Joi.number().required()
+    });
+
+    const result = Joi.validate(ctx.request.body, bodyFormat)
+
+    if (result.error) {
+        throw INVALID_REQUEST_BODY_FORMAT;
+    }
+    
+    //대여한 유저인지 확인
+    const today = new Date().toISOString().slice(0, 10);
+
+    const mySeat = await laptop.findOne({
+        where: {
+            user_id: ctx.user.user_id,
+            created_at: today
+        }
+    })
+
+    if (mySeat == null) {
+        throw NOT_BROUGHT;
+    }
+
+    //대여 가능한 시간인지 확인
+    const currentTime = new Date();
+    const currentDay = currentTime.getDay();
+    const currentHour = currentTime.getHours();
+
+    if (currentDay >= 5 || currentDay == 0) {
+        throw INVALID_APPLY_TIME;
+    }
+    
+    if (currentHour < 9 || currentHour >= 21) {
+        throw INVALID_APPLY_TIME;
+    }
+
+    //대여된 자리인지 확인
+    const seat = await laptop.findOne({
+        where: {
+            seat: ctx.request.body.seat,
+            created_at: today
+        }
+    })
+
+    if (seat) {
+        throw RESERVED_SEAT;
+    }
+
+    //대여 가능한 실인지 확인
+    if (!ROOM_LIST.includes(ctx.request.body.room)) {
+        throw INVALID_SEAT;
+    }
+
+    //대여 가능한 자리인지 확인
+
+
+    //대여 자리 변경
+    await mySeat.update({
+        "room" : ctx.request.body.room,
+        "seat" : ctx.request.body.seat
+    })
+
+    ctx.status = 200
 }
 
 export const CancelLaptop = async (ctx) => {

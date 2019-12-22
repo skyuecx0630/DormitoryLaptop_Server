@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import { Register, Login, ConfirmEmail } from 'controllers/auth';
 import { RefreshToken, UserInfo } from 'controllers/user';
-import { BorrowLaptop, CancelLaptop } from 'controllers/laptop';
+import { BorrowLaptop, CancelLaptop, ChangeLaptop } from 'controllers/laptop';
 
 const auth = new Router;
 
@@ -15,10 +15,13 @@ const user = new Router;
 user.get('/refresh', RefreshToken);
 user.get('/', UserInfo);
 
+
 const laptop = new Router;
 
 laptop.post('/', BorrowLaptop);
+laptop.put('/', ChangeLaptop);
 laptop.delete('/', CancelLaptop);
+
 
 const routes = new Router;
 
