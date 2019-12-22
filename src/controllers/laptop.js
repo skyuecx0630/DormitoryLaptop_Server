@@ -174,3 +174,33 @@ export const CancelLaptop = async (ctx) => {
     await seat.destroy();
     ctx.status = 200;
 }
+
+export const MyLaptop = async (ctx) => {
+    //대여한 유저인지 확인
+    const today = new Date().toISOString().slice(0, 10);
+
+    const mySeat = await laptop.findOne({
+        where: {
+            user_id: ctx.user.user_id,
+            created_at: today
+        }
+    })
+
+    var room;
+    var seat;
+
+    if (mySeat == null) {
+        room = "";
+        seat = 0;
+    }
+    else {
+        room = mySeat.room,
+        seat = mySeat.seat
+    }
+
+    ctx.status = 200;
+    ctx.body = {
+        "room" : room,
+        "seat" : seat
+    }
+}
