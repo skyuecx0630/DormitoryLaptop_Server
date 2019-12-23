@@ -4,7 +4,9 @@ import {
     INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
 } from 'errors/error'
 
-const ROOM_LIST = ["lab1", "lab2", "lab3", "lab4", "self"]
+const ROOM_LIST = ["lab1", "lab2", "lab3", "lab4", "self"];
+const ROOM_NAME = ["Lab 1실", "Lab 2실", "Lab 3실", "Lab 4실", "자기주도학습실"];
+const ROOM_SIZE = [24, 24, 24, 24, 36];
 
 export const BorrowLaptop = async (ctx) => {
     //Joi 형식 검사
@@ -203,6 +205,41 @@ export const MyLaptop = async (ctx) => {
         "room" : room,
         "seat" : seat
     }
+}
+
+export const RoomList = async (ctx) => {
+    let rooms = {};
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    for (let i in ROOM_LIST) {
+        const room = await laptop.findAll({
+            where: {
+                room: ROOM_LIST[i],
+                created_at: today
+            }
+        })
+        
+        const statusRatio = room.length / ROOM_SIZE[i];
+        let status;
+
+        if (statusRatio <= 0.5) 
+            status = 0;
+        else if (statusRatio <= 0.75) 
+            status = 1;
+        else
+            status = 2;
+
+        rooms[ROOM_NAME[i]] = {
+            "room" : ROOM_LIST[i],
+            "size" : ROOM_SIZE[i],
+            "seats" : room.length,
+            "status" : status
+        }
+    }
+
+    ctx.status = 200;
+    ctx.body = rooms;
 }
 
 export const RoomSeat = async (ctx) => {
