@@ -100,12 +100,9 @@ export const Register = async (ctx) => {
             }
         });
     } while (verifycode.length);
-
     sendRegisterEmail(ctx.request.body.email, key_for_verify);
-
     //비밀번호 해쉬 후 계정 생성
-    const password = crypto.createHmac('sha256', process.env.Password_KEY).update(ctx.request.body.password).digest('hex');
-
+    const password = crypto.createHmac('sha256', process.env.PASSWORD_KEY).update(ctx.request.body.password).digest('hex');
     await user.create({
         "email": ctx.request.body.email,
         "password": password,
