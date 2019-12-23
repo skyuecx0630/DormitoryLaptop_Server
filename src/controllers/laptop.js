@@ -290,13 +290,29 @@ export const RoomSeat = async (ctx) => {
                 [Op.gt]: Date.parse(today + " 00:00:00"),
                 [Op.lt]: Date.parse(today + " 23:59:59"),
             }
-        }
+        },
+        order : ["seat"]
     })
 
-    let seatsArray = [];
+    let reserved = [];
+    
+    for (let i in seats) {
+        reserved.push(seats[i].seat)
+    }
 
-    for (let i in seats){
-        seatsArray.push(seats[i].seat)
+    let seatsArray = [];
+    
+    for (let i = 1; i <= ROOM_SIZE[ROOM_LIST.indexOf(room)] + 1; i++){ 
+        if (reserved.includes(i)) {
+            seatsArray.push({
+                "seated" : 2
+            })
+        }
+        else {
+            seatsArray.push({
+                "seated": 1
+            })
+        }
     }
 
     ctx.status = 200;
