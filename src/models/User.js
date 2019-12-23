@@ -26,6 +26,10 @@ export const User = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        number: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         dormitory_point: {
             type: DataTypes.INTEGER,
             defaultValue: 0

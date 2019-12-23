@@ -18,7 +18,7 @@ export const Laptop = (sequelize, DataTypes) => {
             allowNull: false
         },
         created_at: {
-            type: DataTypes.DATEONLY,
+            type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         }
     })

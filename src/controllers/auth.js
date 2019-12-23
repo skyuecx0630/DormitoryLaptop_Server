@@ -112,6 +112,7 @@ export const Register = async (ctx) => {
         "name": "tester1",
         "grade": 0,
         "class": 0,
+        "number": 0,
         "authority": ctx.params.authority,
         "key_for_verify": key_for_verify
     });
