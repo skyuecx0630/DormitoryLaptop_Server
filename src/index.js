@@ -6,12 +6,15 @@ import bodyParser from 'koa-bodyparser';
 import helmet from 'koa-helmet';
 import winston from 'winston';
 import cors from '@koa/cors';
-import routes from 'routes'
 import errorHandler from 'middlewares/error-handler';
-import authenticater from './middlewares/authenticater';
+import authenticater from 'middlewares/authenticater';
+import permissionOnly from 'middlewares/permission-only';
 
-import { logger } from './logger';
-import { sequelize } from './models';
+import { logger } from 'logger';
+import { sequelize } from 'models';
+import userRouter from 'router/userRouter';
+import managerRouter from 'router/managerRouter';
+import teacherRouter from 'router/teacherRouter';
 sequelize.sync();
 
 
@@ -24,7 +27,11 @@ app.use(helmet())
     .use(errorHandler())
     .use(bodyParser())
     .use(authenticater().unless({ path: [/^\/auth/] }))
-    .use(routes.routes()).use(routes.allowedMethods())
+    .use(userRouter.routes()).use(userRouter.allowedMethods())
+    .use(permissionOnly(["manager", "teacher"]))
+    .use(managerRouter.routes()).use(managerRouter.allowedMethods())
+    .use(permissionOnly(["teacher"]))
+    .use(teacherRouter.routes()).use(teacherRouter.allowedMethods())
 
 app.listen(port, () => {
     console.log(`Dormitory Management Server Started.. with port ${port}`);
