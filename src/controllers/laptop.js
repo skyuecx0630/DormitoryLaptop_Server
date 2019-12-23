@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import sequelize from 'sequelize';
-import { laptop, laptop_block } from 'models';
+import { laptop, laptop_block, user } from 'models';
 import {
     INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
 } from 'errors/error'
@@ -290,6 +290,49 @@ export const RoomSeat = async (ctx) => {
 
     for (let i in seats){
         seatsArray.push(seats[i].seat)
+    }
+
+    ctx.status = 200;
+    ctx.body = {
+        "seats" : seatsArray
+    }
+}
+
+export const RoomDetail = async (ctx) => {
+    //오늘 학습실에서 대여된 자리 조회
+    const today = new Date().toISOString().slice(0, 10);
+
+    const seats = await laptop.findAll({
+        where: {
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
+        }
+    })
+
+    //클라이언트에 전달할 데이터 직렬화
+    let seatsArray = [];
+
+    for (let i in seats) {
+
+        //학습실 신청한 학생의 정보 조회
+        const student = await user.findOne({
+            where: {
+                user_id: seats[i].user_id
+            }
+        })
+
+        const record = {
+            "name" : student.name,
+            "grade" : student.grade,
+            "class" : student.class,
+            "room" : ROOM_NAME[ROOM_LIST.indexOf(seats[i].room)],
+            "isBlocked" : false,
+            "rentalTime" : seats[i].created_at.slice(11,16)
+        }
+
+        seatsArray.push(record)
     }
 
     ctx.status = 200;

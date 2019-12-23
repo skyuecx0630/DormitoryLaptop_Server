@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import { Register, Login, ConfirmEmail } from 'controllers/auth';
 import { RefreshToken, UserInfo } from 'controllers/user';
-import { BorrowLaptop, CancelLaptop, ChangeLaptop, MyLaptop, RoomSeat, RoomList } from 'controllers/laptop';
+import { BorrowLaptop, CancelLaptop, ChangeLaptop, MyLaptop, RoomSeat, RoomList, RoomDetail } from 'controllers/laptop';
 
 const auth = new Router;
 
@@ -24,6 +24,7 @@ laptop.delete('/', CancelLaptop);
 laptop.get('/', MyLaptop);
 
 laptop.get('/all', RoomList);
+laptop.get('/detail', RoomDetail);
 laptop.get('/:room', RoomSeat);
 
 
