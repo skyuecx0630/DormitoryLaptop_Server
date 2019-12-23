@@ -229,9 +229,11 @@ export const MyLaptop = async (ctx) => {
 }
 
 export const RoomList = async (ctx) => {
-    let rooms = {};
+    let roomsArray = [];
 
+    //오늘 각 학습실에서 대여된 자리 받아오기
     const today = new Date().toISOString().slice(0, 10);
+
     for (let i in ROOM_LIST) {
         const room = await laptop.findAll({
             where: {
@@ -240,9 +242,10 @@ export const RoomList = async (ctx) => {
                     [Op.gt]: Date.parse(today + " 00:00:00"),
                     [Op.lt]: Date.parse(today + " 23:59:59"),
                 }
-            }   
+            }
         })
-        
+
+        //현재 학습실의 혼잡도를 계산
         const statusRatio = room.length / ROOM_SIZE[i];
         let status;
 
@@ -253,16 +256,20 @@ export const RoomList = async (ctx) => {
         else
             status = 2;
 
-        rooms[ROOM_NAME[i]] = {
+        //학습실 정보 저장
+        roomsArray.push({
+            "name": ROOM_NAME[i],
             "room" : ROOM_LIST[i],
             "size" : ROOM_SIZE[i],
             "seats" : room.length,
             "status" : status
-        }
+        })
     }
 
     ctx.status = 200;
-    ctx.body = rooms;
+    ctx.body = {
+        "rooms": roomsArray
+    };
 }
 
 export const RoomSeat = async (ctx) => {
