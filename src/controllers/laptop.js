@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { laptop, laptop_block } from 'models';
 import {
-    INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT
+    INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
 } from 'errors/error'
 
 const ROOM_LIST = ["lab1", "lab2", "lab3", "lab4", "self"]
@@ -71,7 +71,7 @@ export const BorrowLaptop = async (ctx) => {
 
     //대여 가능한 실인지 확인
     if (!ROOM_LIST.includes(ctx.request.body.room)) {
-        throw INVALID_SEAT;
+        throw INVALID_REQUEST_DATA;
     }
 
     //대여 가능한 자리인지 확인
@@ -141,7 +141,7 @@ export const ChangeLaptop = async (ctx) => {
 
     //대여 가능한 실인지 확인
     if (!ROOM_LIST.includes(ctx.request.body.room)) {
-        throw INVALID_SEAT;
+        throw INVALID_REQUEST_DATA;
     }
 
     //대여 가능한 자리인지 확인
@@ -202,5 +202,35 @@ export const MyLaptop = async (ctx) => {
     ctx.body = {
         "room" : room,
         "seat" : seat
+    }
+}
+
+export const RoomSeat = async (ctx) => {
+    //올바른 학습실인지 확인
+    const room = ctx.params.room;
+    
+    if (!ROOM_LIST.includes(room)){
+        throw INVALID_REQUEST_DATA
+    }
+    
+    //오늘 해당 학습실에서 대여된 자리 조회
+    const today = new Date().toISOString().slice(0, 10);
+
+    const seats = await laptop.findAll({
+        where: {
+            room: room,
+            created_at: today
+        }
+    })
+
+    let seatsArray = [];
+
+    for (let i in seats){
+        seatsArray.push(seats[i].seat)
+    }
+
+    ctx.status = 200;
+    ctx.body = {
+        "seats" : seatsArray
     }
 }
