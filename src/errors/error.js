@@ -4,6 +4,12 @@ module.exports.AUTH_REQUIRED = {
     message: 'Authentication is needed to access the endpoint.'
 }
 
+module.exports.NO_PERMISSIONS = {
+    statusCode: 403,
+    code: 'NO_PERMISSIONS',
+    message: 'You don\'t have permission to access the endpoint.'
+}
+
 module.exports.INVALID_REQUEST_BODY_FORMAT = {
     statusCode: 422,
     code: 'INVALID_REQUEST_BODY_FORMAT',
