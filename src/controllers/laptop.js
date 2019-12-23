@@ -95,7 +95,7 @@ export const BorrowLaptop = async (ctx) => {
         "seat" : ctx.request.body.seat 
     })
     
-    ctx.status = 200;
+    ctx.status = 204;
 }
 
 export const ChangeLaptop = async (ctx) => {
@@ -170,7 +170,7 @@ export const ChangeLaptop = async (ctx) => {
         "seat" : ctx.request.body.seat
     })
 
-    ctx.status = 200
+    ctx.status = 204;
 }
 
 export const CancelLaptop = async (ctx) => {
@@ -191,8 +191,10 @@ export const CancelLaptop = async (ctx) => {
         throw NOT_BROUGHT;
     }
 
+    //노트북 대여 취소
     await seat.destroy();
-    ctx.status = 200;
+
+    ctx.status = 204;
 }
 
 export const MyLaptop = async (ctx) => {
@@ -209,6 +211,7 @@ export const MyLaptop = async (ctx) => {
         }
     })
 
+    //노트북 대여 현황 처리
     var room;
     var seat;
 
@@ -221,6 +224,7 @@ export const MyLaptop = async (ctx) => {
         seat = mySeat.seat
     }
 
+    //노트북 대여 현황 반환
     ctx.status = 200;
     ctx.body = {
         "room" : room,
@@ -266,6 +270,7 @@ export const RoomList = async (ctx) => {
         })
     }
 
+    //학습실 목록 반환
     ctx.status = 200;
     ctx.body = {
         "rooms": roomsArray
@@ -294,12 +299,14 @@ export const RoomSeat = async (ctx) => {
         order : ["seat"]
     })
 
+    //대여된 자리 배열로 변환
     let reserved = [];
     
     for (let i in seats) {
         reserved.push(seats[i].seat)
     }
 
+    //자리를 대여 불가, 대여 가능, 대여 완료 구분
     let seatsArray = [];
     
     for (let i = 1; i <= ROOM_SIZE[ROOM_LIST.indexOf(room)] + 1; i++){ 
@@ -315,6 +322,7 @@ export const RoomSeat = async (ctx) => {
         }
     }
 
+    //자리 현황 반환
     ctx.status = 200;
     ctx.body = {
         "seats" : seatsArray
@@ -359,6 +367,7 @@ export const RoomDetail = async (ctx) => {
         seatsArray.push(record)
     }
 
+    //대여한 학생 목록 반환
     ctx.status = 200;
     ctx.body = {
         "seats" : seatsArray

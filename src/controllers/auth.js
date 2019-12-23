@@ -56,6 +56,8 @@ export const Login = async (ctx) => {
     let token = null;
     token = await generateToken(payload);
 
+    //토큰 반환
+    ctx.status = 200;
     ctx.body = {
         token: token
     };
@@ -100,7 +102,10 @@ export const Register = async (ctx) => {
             }
         });
     } while (verifycode.length);
+
+    //인증 이메일 전송
     sendRegisterEmail(ctx.request.body.email, key_for_verify);
+
     //비밀번호 해쉬 후 계정 생성
     const password = crypto.createHmac('sha256', process.env.PASSWORD_KEY).update(ctx.request.body.password).digest('hex');
     await user.create({
@@ -114,10 +119,11 @@ export const Register = async (ctx) => {
         "key_for_verify": key_for_verify
     });
 
-    ctx.status = 200;
+    ctx.status = 204;
 }
 
 export const ConfirmEmail = async (ctx) => {
+    //인증키 확인
     const key_for_verify = ctx.query.key;
 
     const account = await user.findOne({
@@ -130,9 +136,10 @@ export const ConfirmEmail = async (ctx) => {
         throw INVALID_REQUEST_DATA;
     }
 
+    //인증 완료
     await account.update({
         "validation": true
     });
 
-    ctx.status = 200;
+    ctx.status = 204;
 }
