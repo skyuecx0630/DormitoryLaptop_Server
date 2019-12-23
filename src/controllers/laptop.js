@@ -1,8 +1,11 @@
 import Joi from 'joi';
+import sequelize from 'sequelize';
 import { laptop, laptop_block } from 'models';
 import {
     INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
 } from 'errors/error'
+
+const Op = sequelize.Op;
 
 const ROOM_LIST = ["lab1", "lab2", "lab3", "lab4", "self"];
 const ROOM_NAME = ["Lab 1실", "Lab 2실", "Lab 3실", "Lab 4실", "자기주도학습실"];
@@ -51,7 +54,10 @@ export const BorrowLaptop = async (ctx) => {
     const mySeat = await laptop.findOne({
         where: {
             user_id : ctx.user.user_id,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
     
@@ -63,7 +69,10 @@ export const BorrowLaptop = async (ctx) => {
     const seat = await laptop.findOne({
         where: {
             seat: ctx.request.body.seat,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
@@ -108,7 +117,10 @@ export const ChangeLaptop = async (ctx) => {
     const mySeat = await laptop.findOne({
         where: {
             user_id: ctx.user.user_id,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
@@ -133,7 +145,10 @@ export const ChangeLaptop = async (ctx) => {
     const seat = await laptop.findOne({
         where: {
             seat: ctx.request.body.seat,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
@@ -165,7 +180,10 @@ export const CancelLaptop = async (ctx) => {
     const seat = await laptop.findOne({
         where: {
             user_id : ctx.user.user_id,
-            created_at : today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
@@ -184,7 +202,10 @@ export const MyLaptop = async (ctx) => {
     const mySeat = await laptop.findOne({
         where: {
             user_id: ctx.user.user_id,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
@@ -211,13 +232,15 @@ export const RoomList = async (ctx) => {
     let rooms = {};
 
     const today = new Date().toISOString().slice(0, 10);
-
     for (let i in ROOM_LIST) {
         const room = await laptop.findAll({
             where: {
                 room: ROOM_LIST[i],
-                created_at: today
-            }
+                created_at: {
+                    [Op.gt]: Date.parse(today + " 00:00:00"),
+                    [Op.lt]: Date.parse(today + " 23:59:59"),
+                }
+            }   
         })
         
         const statusRatio = room.length / ROOM_SIZE[i];
@@ -256,7 +279,10 @@ export const RoomSeat = async (ctx) => {
     const seats = await laptop.findAll({
         where: {
             room: room,
-            created_at: today
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
         }
     })
 
