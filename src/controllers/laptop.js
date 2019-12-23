@@ -334,6 +334,7 @@ export const RoomDetail = async (ctx) => {
             "name" : student.name,
             "grade" : student.grade,
             "class" : student.class,
+            "number" : student.number,
             "room" : ROOM_NAME[ROOM_LIST.indexOf(seats[i].room)],
             "isBlocked" : false,
             "rentalTime" : seats[i].created_at.slice(11,16)
