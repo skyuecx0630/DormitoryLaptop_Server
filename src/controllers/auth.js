@@ -136,8 +136,7 @@ export const Register = async (ctx) => {
 
 export const ConfirmEmail = async (ctx) => {
     //인증키 확인
-    const key_for_verify = ctx.query.key;
-
+    const key_for_verify = ctx.query.key.replace(' ', '+');
     const account = await user.findOne({
         where: {
             "key_for_verify": key_for_verify
