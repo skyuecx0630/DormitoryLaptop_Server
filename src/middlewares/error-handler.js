@@ -5,6 +5,7 @@ module.exports = () => {
         } catch (error){
             ctx.status = error.statusCode || 500;
             ctx.body = {
+                "title" : error.code,
                 "msg" : error.message
             }
             return;
