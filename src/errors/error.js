@@ -22,6 +22,12 @@ module.exports.EXISTING_EMAIL = {
     message: 'The requested email already exists.'
 }
 
+module.exports.INVALID_VERIFICATION_CODE = {
+    statusCode: 422,
+    code: 'INVALID_VERIFICATION_CODE',
+    message: 'The verification code is invalid.'
+}
+
 module.exports.INVALID_ACCOUNT = {
     statusCode: 422,
     code: 'INVALID_ACCOUNT',

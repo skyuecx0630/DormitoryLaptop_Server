@@ -1,10 +1,10 @@
 import Joi from 'joi';
 import crypto from 'crypto';
-import { user } from 'models';
+import { user, auth_code } from 'models';
 import { generateToken } from 'utils/token';
 import { sendRegisterEmail } from 'utils/sendMail';
 import {
-    INVALID_REQUEST_BODY_FORMAT, EXISTING_EMAIL, INVALID_ACCOUNT, UNVERIFIED_ACCOUNT, INVALID_REQUEST_DATA
+    INVALID_REQUEST_BODY_FORMAT, EXISTING_EMAIL, INVALID_ACCOUNT, UNVERIFIED_ACCOUNT, INVALID_REQUEST_DATA, INVALID_VERIFICATION_CODE
 } from 'errors/error';
 
 
@@ -88,6 +88,18 @@ export const Register = async (ctx) => {
         throw EXISTING_EMAIL;
     }
 
+    //인증 코드 검사
+    const verification = await auth_code.findOne({
+        where: {
+            auth_code: ctx.request.body.verification_code,
+            authority: ctx.params.authority
+        }
+    })
+
+    if (verification == null) {
+        throw INVALID_VERIFICATION_CODE;
+    }
+
     //이메일 인증 키 생성
     let verifycode;
     let key_for_verify;
@@ -104,18 +116,18 @@ export const Register = async (ctx) => {
     } while (verifycode.length);
 
     //인증 이메일 전송
-    sendRegisterEmail(ctx.request.body.email, key_for_verify);
+    await sendRegisterEmail(ctx.request.body.email, key_for_verify);
 
     //비밀번호 해쉬 후 계정 생성
     const password = crypto.createHmac('sha256', process.env.PASSWORD_KEY).update(ctx.request.body.password).digest('hex');
     await user.create({
         "email": ctx.request.body.email,
         "password": password,
-        "name": "tester1",
-        "grade": 0,
-        "class": 0,
-        "number": 0,
-        "authority": ctx.params.authority,
+        "name": verification.name,
+        "grade": verification.grade,
+        "class": verification.class,
+        "number": verification.number,
+        "authority": verification.authority,
         "key_for_verify": key_for_verify
     });
 
