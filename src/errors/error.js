@@ -49,7 +49,7 @@ module.exports.INVALID_REQUEST_DATA = {
 module.exports.RESERVED_USER = {
     statusCode: 422,
     code: "노트북 대여 불가",
-    message: '이미 노트북을 대여하셨습니다.'
+    message: '이미 노트북을 대여하였습니다.'
 }
 
 module.exports.RESERVED_SEAT = {
