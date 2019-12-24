@@ -308,17 +308,22 @@ export const RoomSeat = async (ctx) => {
 
     //자리를 대여 불가, 대여 가능, 대여 완료 구분
     let seatsArray = [];
-    
+    let seatsLine = [];
     for (let i = 1; i <= ROOM_SIZE[ROOM_LIST.indexOf(room)] + 1; i++){ 
         if (reserved.includes(i)) {
-            seatsArray.push({
+            seatsLine.push({
                 "seated" : 2
             })
         }
         else {
-            seatsArray.push({
+            seatsLine.push({
                 "seated": 1
             })
+        }
+
+        if (seatsLine.length == 6) {
+            seatsArray.push(seatsLine);
+            seatsLine = [];
         }
     }
 
