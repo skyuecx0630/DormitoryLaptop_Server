@@ -95,7 +95,11 @@ export const BorrowLaptop = async (ctx) => {
         "seat" : ctx.request.body.seat 
     })
     
-    ctx.status = 204;
+    ctx.status = 200;
+    ctx.body = {
+        "title" : "노트북 대여 신청",
+        "msg" : "대여 신청에 성공하였습니다!"
+    }
 }
 
 export const ChangeLaptop = async (ctx) => {
@@ -170,7 +174,11 @@ export const ChangeLaptop = async (ctx) => {
         "seat" : ctx.request.body.seat
     })
 
-    ctx.status = 204;
+    ctx.status = 200;
+    ctx.body = {
+        "title" : "노트북 대여 변경",
+        "msg" : "대여가 변경되었습니다!"
+    }
 }
 
 export const CancelLaptop = async (ctx) => {
@@ -194,7 +202,11 @@ export const CancelLaptop = async (ctx) => {
     //노트북 대여 취소
     await seat.destroy();
 
-    ctx.status = 204;
+    ctx.status = 200;
+    ctx.body = {
+        "title" : "노트북 대여 취소",
+        "msg" : "대여가 취소되었습니다!"
+    }
 }
 
 export const MyLaptop = async (ctx) => {
