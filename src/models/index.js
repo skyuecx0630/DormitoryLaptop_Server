@@ -7,6 +7,7 @@ import { Laptop } from './Laptop';
 import { LaptopBlock } from './LaptopBlock';
 import { MorningSong } from './MorningSong';
 import { Point } from './Point';
+import { AuthCode } from './AuthCode';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['dormitory'];
 
@@ -18,6 +19,7 @@ const sequelize = new Sequelize(
 )
 
 const user = User(sequelize, Sequelize);
+const auth_code = AuthCode(sequelize, Sequelize);
 const notice = Notice(sequelize, Sequelize);
 const laptop = Laptop(sequelize, Sequelize);
 const laptop_block = LaptopBlock(sequelize, Sequelize);
@@ -25,5 +27,5 @@ const morning_song = MorningSong(sequelize, Sequelize);
 const point = Point(sequelize, Sequelize);
 
 export {
-    sequelize, Sequelize, user, notice, laptop, laptop_block, morning_song, point
+    sequelize, Sequelize, user, auth_code, notice, laptop, laptop_block, morning_song, point
 };
