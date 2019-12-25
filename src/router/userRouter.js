@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import { Register, Login, ConfirmEmail } from 'controllers/auth';
 import { RefreshToken, UserInfo } from 'controllers/user';
 import { BorrowLaptop, CancelLaptop, ChangeLaptop, MyLaptop, RoomSeat, RoomList, RoomDetail } from 'controllers/laptop';
+import { RequestSong } from 'controllers/requestSong';
 
 const auth = new Router;
 
@@ -27,11 +28,17 @@ laptop.get('/rooms/list', RoomList);
 laptop.get('/rooms/:room', RoomSeat);
 
 
+const song = new Router;
+
+song.post('/', RequestSong);
+
+
 const userRouter = new Router;
 
 userRouter.use('/auth', auth.routes());
 userRouter.use('/user', user.routes());
 userRouter.use('/laptop', laptop.routes());
+userRouter.use('/song', song.routes());
 
 
 module.exports = userRouter;
