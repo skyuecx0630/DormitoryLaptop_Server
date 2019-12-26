@@ -12,6 +12,32 @@ const ROOM_LIST = ["lab1", "lab2", "lab3", "lab4", "self"];
 const ROOM_NAME = ["Lab 1실", "Lab 2실", "Lab 3실", "Lab 4실", "자기주도학습실"];
 const ROOM_SIZE = [24, 24, 24, 24, 36];
 
+const checkApplyTime = () => {
+    const currentDay = now().day();
+    const currentHour = now().hour();
+    if (currentDay >= 5 || currentDay == 0) {
+        throw INVALID_APPLY_TIME;
+    }
+    if (currentHour < 9 || currentHour >= 21) {
+        throw INVALID_APPLY_TIME;
+    }
+}
+const checkReserved = async () => {
+    const seat = await laptop.findOne({
+        where: {
+            seat: ctx.request.body.seat,
+            created_at: {
+                [Op.gt]: Date.parse(today + " 00:00:00"),
+                [Op.lt]: Date.parse(today + " 23:59:59"),
+            }
+        }
+    })
+    if (seat) {
+        throw RESERVED_SEAT;
+    }
+}
+
+
 export const BorrowLaptop = async (ctx) => {
     //Joi 형식 검사
     const bodyFormat = Joi.object().keys({
@@ -26,17 +52,10 @@ export const BorrowLaptop = async (ctx) => {
     }
     
     //대여 가능한 시간인지 확인
-    const currentTime = new Date();
-    const currentDay = currentTime.getDay();
-    const currentHour = currentTime.getHours();
+    checkApplyTime();
 
-    if (currentDay >= 5 || currentDay == 0) {
-        throw INVALID_APPLY_TIME;
-    }
-
-    if (currentHour < 9 || currentHour >= 21) {
-        throw INVALID_APPLY_TIME;
-    }
+    //대여된 자리인지 확인
+    await checkReserved();
 
     //노트북 대여 금지된 유저인지 확인
     const isBlocked = await laptop_block.findOne({
@@ -66,20 +85,6 @@ export const BorrowLaptop = async (ctx) => {
         throw RESERVED_USER;
     }
 
-    //대여된 자리인지 확인
-    const seat = await laptop.findOne({
-        where: {
-            seat: ctx.request.body.seat,
-            created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
-            }
-        }
-    })
-
-    if (seat) {
-        throw RESERVED_SEAT;
-    }
 
     //대여 가능한 실인지 확인
     if (!ROOM_LIST.includes(ctx.request.body.room)) {
@@ -134,32 +139,10 @@ export const ChangeLaptop = async (ctx) => {
     }
 
     //대여 가능한 시간인지 확인
-    const currentTime = new Date();
-    const currentDay = currentTime.getDay();
-    const currentHour = currentTime.getHours();
-
-    if (currentDay >= 5 || currentDay == 0) {
-        throw INVALID_APPLY_TIME;
-    }
-    
-    if (currentHour < 9 || currentHour >= 21) {
-        throw INVALID_APPLY_TIME;
-    }
+    checkApplyTime();
 
     //대여된 자리인지 확인
-    const seat = await laptop.findOne({
-        where: {
-            seat: ctx.request.body.seat,
-            created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
-            }
-        }
-    })
-
-    if (seat) {
-        throw RESERVED_SEAT;
-    }
+    await checkReserved();
 
     //대여 가능한 실인지 확인
     if (!ROOM_LIST.includes(ctx.request.body.room)) {
