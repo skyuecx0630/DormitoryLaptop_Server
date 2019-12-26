@@ -65,7 +65,8 @@ export const BorrowLaptop = async (ctx) => {
             user_id: ctx.user.user_id,
             ends_at: {
                 [Op.gte]: Date.parse(now().toISOString().slice(0, 10))
-            }
+            },
+            activated: true
         }
     })
 

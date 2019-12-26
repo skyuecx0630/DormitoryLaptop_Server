@@ -16,6 +16,10 @@ export const LaptopBlock = (sequelize, DataTypes) => {
         ends_at: {
             type: DataTypes.DATEONLY,
             allowNull: false
+        },
+        activated: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     })
 }
