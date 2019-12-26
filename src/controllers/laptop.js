@@ -380,9 +380,11 @@ export const RoomDetail = async (ctx) => {
             }
         })
 
-        let is_blocked = false;
-        if (history)
-            is_blocked = true
+        let is_blocked = 0;
+        if (history && history.activated)
+            is_blocked = 2;
+        else if (history)
+            is_blocked = 1;
 
         const record = {
             "user_id" : student.user_id,
