@@ -20,6 +20,7 @@ export const UserInfo = async (ctx) => {
         "name": ctx.user.name,
         "grade": ctx.user.grade,
         "class": ctx.user.class,
+        "authority" : ctx.user.authority,
         "point": ctx.user.dormitory_point,
     }
 }
