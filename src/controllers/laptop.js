@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import sequelize from 'sequelize';
+import { now } from 'utils/timeCalc'
 import { laptop, laptop_block, user } from 'models';
 import {
     INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
@@ -44,12 +45,12 @@ export const BorrowLaptop = async (ctx) => {
         }
     });
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     if (isBlocked && (isBlocked.starts_at <= today && isBlocked.ends_at >= today)) {
         throw BORROW_BLOCKED;
     }
-    
+
     //이미 대여한 유저인지 확인
     const mySeat = await laptop.findOne({
         where: {
@@ -116,7 +117,7 @@ export const ChangeLaptop = async (ctx) => {
     }
     
     //대여한 유저인지 확인
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     const mySeat = await laptop.findOne({
         where: {
@@ -183,7 +184,7 @@ export const ChangeLaptop = async (ctx) => {
 
 export const CancelLaptop = async (ctx) => {
     //대여한 유저인지 확인
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     const seat = await laptop.findOne({
         where: {
@@ -211,7 +212,7 @@ export const CancelLaptop = async (ctx) => {
 
 export const MyLaptop = async (ctx) => {
     //대여한 유저인지 확인
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     const mySeat = await laptop.findOne({
         where: {
@@ -248,7 +249,7 @@ export const RoomList = async (ctx) => {
     let roomsArray = [];
 
     //오늘 각 학습실에서 대여된 자리 받아오기
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     for (let i in ROOM_LIST) {
         const room = await laptop.findAll({
@@ -307,7 +308,7 @@ export const RoomSeat = async (ctx) => {
     }
     
     //오늘 해당 학습실에서 대여된 자리 조회
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     const seats = await laptop.findAll({
         where: {
@@ -357,7 +358,7 @@ export const RoomSeat = async (ctx) => {
 
 export const RoomDetail = async (ctx) => {
     //오늘 학습실에서 대여된 자리 조회
-    const today = new Date().toISOString().slice(0, 10);
+    const today = now().toISOString().slice(0, 10);
 
     const seats = await laptop.findAll({
         where: {
