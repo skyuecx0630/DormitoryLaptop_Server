@@ -70,7 +70,10 @@ export const BorrowLaptop = async (ctx) => {
     })
 
     if (isBlocked) {
-        throw BORROW_BLOCKED;
+        let error = BORROW_BLOCKED;
+        error["message"] = `${ctx.user.name}님은 ${isBlocked.starts_at} ~ ${isBlocked.ends_at} 동안 대여 금지 기간입니다.`
+
+        throw error;
     }
 
     //이미 대여한 유저인지 확인
