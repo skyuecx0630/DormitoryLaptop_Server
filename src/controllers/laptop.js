@@ -22,13 +22,13 @@ const checkApplyTime = () => {
         throw INVALID_APPLY_TIME;
     }
 }
-const checkReserved = async () => {
+const checkReserved = async (ctx, today) => {
     const seat = await laptop.findOne({
         where: {
             seat: ctx.request.body.seat,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
@@ -55,7 +55,9 @@ export const BorrowLaptop = async (ctx) => {
     checkApplyTime();
 
     //대여된 자리인지 확인
-    await checkReserved();
+    const today = now().toISOString().slice(0, 10);
+
+    await checkReserved(ctx, today);
 
     //노트북 대여 금지된 유저인지 확인
     const isBlocked = await laptop_block.findOne({
@@ -64,7 +66,6 @@ export const BorrowLaptop = async (ctx) => {
         }
     });
 
-    const today = now().toISOString().slice(0, 10);
 
     if (isBlocked && (isBlocked.starts_at <= today && isBlocked.ends_at >= today)) {
         throw BORROW_BLOCKED;
@@ -75,8 +76,8 @@ export const BorrowLaptop = async (ctx) => {
         where: {
             user_id : ctx.user.user_id,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
@@ -128,8 +129,8 @@ export const ChangeLaptop = async (ctx) => {
         where: {
             user_id: ctx.user.user_id,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
@@ -142,7 +143,7 @@ export const ChangeLaptop = async (ctx) => {
     checkApplyTime();
 
     //대여된 자리인지 확인
-    await checkReserved();
+    await checkReserved(ctx, today);
 
     //대여 가능한 실인지 확인
     if (!ROOM_LIST.includes(ctx.request.body.room)) {
@@ -173,8 +174,8 @@ export const CancelLaptop = async (ctx) => {
         where: {
             user_id : ctx.user.user_id,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
@@ -201,8 +202,8 @@ export const MyLaptop = async (ctx) => {
         where: {
             user_id: ctx.user.user_id,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
@@ -239,8 +240,8 @@ export const RoomList = async (ctx) => {
             where: {
                 room: ROOM_LIST[i],
                 created_at: {
-                    [Op.gt]: Date.parse(today + " 00:00:00"),
-                    [Op.lt]: Date.parse(today + " 23:59:59"),
+                    [Op.gte]: Date.parse(today + " 00:00:00"),
+                    [Op.lte]: Date.parse(today + " 23:59:59"),
                 }
             }
         })
@@ -297,8 +298,8 @@ export const RoomSeat = async (ctx) => {
         where: {
             room: room,
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         },
         order : ["seat"]
@@ -346,8 +347,8 @@ export const RoomDetail = async (ctx) => {
     const seats = await laptop.findAll({
         where: {
             created_at: {
-                [Op.gt]: Date.parse(today + " 00:00:00"),
-                [Op.lt]: Date.parse(today + " 23:59:59"),
+                [Op.gte]: Date.parse(today + " 00:00:00"),
+                [Op.lte]: Date.parse(today + " 23:59:59"),
             }
         }
     })
