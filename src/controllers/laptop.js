@@ -72,7 +72,7 @@ export const BorrowLaptop = async (ctx) => {
 
     if (isBlocked) {
         let error = BORROW_BLOCKED;
-        error["message"] = `${ctx.user.name}님은 ${isBlocked.starts_at} ~ ${isBlocked.ends_at} 동안 대여 금지 기간입니다.`
+        error["msg"] = `${ctx.user.name}님은 ${isBlocked.starts_at} ~ ${isBlocked.ends_at} 동안 대여 금지 기간입니다.`
 
         throw error;
     }

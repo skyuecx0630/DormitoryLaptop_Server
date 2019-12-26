@@ -56,7 +56,7 @@ export const BlockLaptop = async (ctx) => {
     ctx.status = 200;
     ctx.body = {
         "title" : "노트북 부정 사용 적발",
-        "message" : `사감선생님 검토 후 해당 학생의 노트북 대여가 ${ctx.request.body.duration}일 간 금지됩니다.`
+        "msg" : `사감선생님 검토 후 해당 학생의 노트북 대여가 ${ctx.request.body.duration}일 간 금지됩니다.`
     }
 }
 
@@ -79,7 +79,7 @@ export const CancelBlock = async (ctx) => {
     ctx.status = 200;
     ctx.body = {
         "title" : "노트북 부정 사용 적발 취소",
-        "message" : "적발이 취소되었습니다!"
+        "msg" : "적발이 취소되었습니다!"
     }
 }
 
@@ -104,6 +104,6 @@ export const ConfirmBlock = async (ctx) => {
     ctx.status = 200;
     ctx.body = {
         "title" : "노트북 부정 사용 적발 승인",
-        "message" : "적발이 승인되었습니다!"
+        "msg" : "적발이 승인되었습니다!"
     }
 }
