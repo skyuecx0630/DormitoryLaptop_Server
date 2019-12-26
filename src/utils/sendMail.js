@@ -6,7 +6,7 @@ dotenv.config();
 
 // SMTP 메일 설정
 const smtpTransport = nodemailer.createTransport(smtpTransporter({
-    host: 'smtp.daum.net',
+    host: 'smtp.gmail.com',
     secure: true,
     auth: {
         user: process.env.EMAIL_ID,
