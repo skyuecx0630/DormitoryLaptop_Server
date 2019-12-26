@@ -83,5 +83,27 @@ export const CancelBlock = async (ctx) => {
     }
 }
 
+export const ConfirmBlock = async (ctx) => {
+    const history = await laptop_block.findOne({
+        where: {
+            user_id: ctx.params.user_id,
+            ends_at: {
+                [Op.gte]: Date.parse(now().toISOString().slice(0, 10))
+            }
+        }
+    })
+
+    if (history == null) {
+        throw NOT_BLOCKED
+    }
+
+    await history.update({
+        "activated" : true
+    })
+
+    ctx.status = 200;
+    ctx.body = {
+        "title" : "노트북 부정 사용 적발 승인",
+        "message" : "적발이 승인되었습니다!"
     }
 }
