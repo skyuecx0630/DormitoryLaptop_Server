@@ -87,3 +87,9 @@ module.exports.INVALID_URL = {
     code: '노래 신청 불가',
     message: '해당 링크는 유튜브의 링크가 아닙니다.'
 }
+
+module.exports.NOT_BLOCKED = {
+    statusCode: 422,
+    code: '노트북 부정 사용',
+    message: '해당 학생은 노트북 대여 금지 기간이 아닙니다.'
+}
