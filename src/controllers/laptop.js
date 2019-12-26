@@ -347,6 +347,7 @@ export const RoomSeat = async (ctx) => {
 }
 
 export const RoomDetail = async (ctx) => {
+    const type = ctx.query.type;
     //오늘 학습실에서 대여된 자리 조회
     const today = now().toISOString().slice(0, 10);
 
@@ -385,6 +386,11 @@ export const RoomDetail = async (ctx) => {
             is_blocked = 2;
         else if (history)
             is_blocked = 1;
+
+        if (type == "use" && is_blocked)
+            continue
+        else if (type == "caught" && !is_blocked)
+            continue
 
         const record = {
             "user_id" : student.user_id,
