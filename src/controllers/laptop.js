@@ -263,14 +263,22 @@ export const RoomList = async (ctx) => {
 
         //현재 학습실의 혼잡도를 계산
         const statusRatio = room.length / ROOM_SIZE[i];
-        let status;
+        let type;
+        let message;
 
-        if (statusRatio <= 0.5) 
-            status = 0;
-        else if (statusRatio <= 0.75) 
-            status = 1;
-        else
-            status = 2;
+        if (statusRatio <= 0.5){
+            type = "green";
+            message = "여유";
+        } 
+        else if (statusRatio <= 0.75) {
+            type = "yellow";
+            message = "보통";
+        }
+        else {
+            type = "red";
+            message = "혼잡";
+        }
+
 
         //학습실 정보 저장
         roomsArray.push({
@@ -278,7 +286,8 @@ export const RoomList = async (ctx) => {
             "room" : ROOM_LIST[i],
             "size" : ROOM_SIZE[i],
             "seats" : room.length,
-            "status" : status
+            "type" : type,
+            "message" : message
         })
     }
 
@@ -372,13 +381,15 @@ export const RoomDetail = async (ctx) => {
         })
 
         const record = {
+            "user_id" : student.user_id,
             "name" : student.name,
             "grade" : student.grade,
             "class" : student.class,
             "number" : student.number,
             "room" : ROOM_NAME[ROOM_LIST.indexOf(seats[i].room)],
-            "isBlocked" : false,
-            "rentalTime" : seats[i].created_at.slice(11,16)
+            "seat" : seats[i].seat,
+            "is_blocked" : false,
+            "rental_time" : seats[i].created_at.slice(11,16)
         }
 
         seatsArray.push(record)
