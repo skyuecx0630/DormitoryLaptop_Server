@@ -3,9 +3,8 @@ import sequelize from 'sequelize';
 import { now } from 'utils/timeCalc'
 import { laptop_block, user } from 'models';
 import {
-    INVALID_REQUEST_BODY_FORMAT
+    INVALID_REQUEST_BODY_FORMAT, NOT_BLOCKED
 } from 'errors/error'
-import moment from 'moment-timezone';
 
 const Op = sequelize.Op;
 
@@ -56,6 +55,33 @@ export const BlockLaptop = async (ctx) => {
 
     ctx.status = 200;
     ctx.body = {
-        "ends_at" : ends_at
+        "title" : "노트북 부정 사용 적발",
+        "message" : `사감선생님 검토 후 해당 학생의 노트북 대여가 ${ctx.request.body.duration}일 간 금지됩니다.`
+    }
+}
+
+export const CancelBlock = async (ctx) => {
+    const history = await laptop_block.findOne({
+        where: {
+            user_id: ctx.params.user_id,
+            ends_at: {
+                [Op.gte]: Date.parse(now().toISOString().slice(0, 10))
+            }
+        }
+    })
+
+    if (history == null) {
+        throw NOT_BLOCKED
+    }
+
+    await history.destroy();
+
+    ctx.status = 200;
+    ctx.body = {
+        "title" : "노트북 부정 사용 적발 취소",
+        "message" : "적발이 취소되었습니다!"
+    }
+}
+
     }
 }
