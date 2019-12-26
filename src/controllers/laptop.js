@@ -62,12 +62,14 @@ export const BorrowLaptop = async (ctx) => {
     //노트북 대여 금지된 유저인지 확인
     const isBlocked = await laptop_block.findOne({
         where: {
-            user_id : ctx.user.user_id
+            user_id: ctx.user.user_id,
+            ends_at: {
+                [Op.gte]: Date.parse(now().toISOString().slice(0, 10))
+            }
         }
-    });
+    })
 
-
-    if (isBlocked && (isBlocked.starts_at <= today && isBlocked.ends_at >= today)) {
+    if (isBlocked) {
         throw BORROW_BLOCKED;
     }
 
@@ -365,6 +367,19 @@ export const RoomDetail = async (ctx) => {
             }
         })
 
+        const history = await laptop_block.findOne({
+            where: {
+                user_id: student.user_id,
+                ends_at: {
+                    [Op.gte]: Date.parse(now().toISOString().slice(0, 10))
+                }
+            }
+        })
+
+        let is_blocked = false;
+        if (history)
+            is_blocked = true
+
         const record = {
             "user_id" : student.user_id,
             "name" : student.name,
@@ -373,7 +388,7 @@ export const RoomDetail = async (ctx) => {
             "number" : student.number,
             "room" : ROOM_NAME[ROOM_LIST.indexOf(seats[i].room)],
             "seat" : seats[i].seat,
-            "is_blocked" : false,
+            "is_blocked" : is_blocked,
             "rental_time" : seats[i].created_at.slice(11,16)
         }
 
