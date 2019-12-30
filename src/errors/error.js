@@ -34,6 +34,12 @@ module.exports.INVALID_ACCOUNT = {
     message: '이메일 혹은 패스워드가 올바르지 않습니다.'
 }
 
+module.exports.INVALID_VERIFICATION_KEY = {
+    statusCode: 422,
+    code: '잘못된 인증 키',
+    message: '올바르지 않은 인증 키입니다.'
+}
+
 module.exports.UNVERIFIED_ACCOUNT = {
     statusCode: 422,
     code: '인증되지 않은 계정',

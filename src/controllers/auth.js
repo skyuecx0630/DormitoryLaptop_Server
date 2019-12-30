@@ -4,7 +4,7 @@ import { user, auth_code } from 'models';
 import { generateToken } from 'utils/token';
 import { sendRegisterEmail } from 'utils/sendMail';
 import {
-    INVALID_REQUEST_BODY_FORMAT, EXISTING_EMAIL, INVALID_ACCOUNT, UNVERIFIED_ACCOUNT, INVALID_REQUEST_DATA, INVALID_VERIFICATION_CODE
+    INVALID_REQUEST_BODY_FORMAT, EXISTING_EMAIL, INVALID_ACCOUNT, UNVERIFIED_ACCOUNT, INVALID_VERIFICATION_CODE, INVALID_VERIFICATION_KEY
 } from 'errors/error';
 
 
@@ -144,7 +144,7 @@ export const ConfirmEmail = async (ctx) => {
     });
 
     if(account == null){
-        throw INVALID_REQUEST_DATA;
+        throw INVALID_VERIFICATION_KEY;
     }
 
     //인증 완료
