@@ -152,5 +152,9 @@ export const ConfirmEmail = async (ctx) => {
         "validation": true
     });
 
-    ctx.status = 204;
+    ctx.status = 200;
+    ctx.body = {
+        'title' : '인증 성공',
+        "message" : '이제 로그인 하실 수 있습니다!'
+    }
 }
