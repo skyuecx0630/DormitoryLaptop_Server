@@ -70,6 +70,12 @@ module.exports.INVALID_APPLY_TIME = {
     message: '신청 마감 시각(21:00)이 지나 더 이상 신청이 불가능합니다.'
 }
 
+module.exports.INVALID_APPLY_DAY = {
+    statusCode: 422,
+    code: '노트북 대여 불가',
+    message: '노트북 대여 신청이 가능한 요일이 아닙니다.'
+}
+
 module.exports.BORROW_BLOCKED = {
     statusCode: 422,
     code: '노트북 대여 불가',

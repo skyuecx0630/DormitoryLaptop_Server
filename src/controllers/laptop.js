@@ -3,7 +3,7 @@ import sequelize from 'sequelize';
 import { now } from 'utils/timeCalc'
 import { laptop, laptop_block, user } from 'models';
 import {
-    INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA
+    INVALID_REQUEST_BODY_FORMAT, INVALID_APPLY_TIME, RESERVED_SEAT, RESERVED_USER, INVALID_SEAT, BORROW_BLOCKED, NOT_BROUGHT, INVALID_REQUEST_DATA, INVALID_APPLY_DAY
 } from 'errors/error'
 
 const Op = sequelize.Op;
@@ -16,7 +16,7 @@ const checkApplyTime = () => {
     const currentDay = now().day();
     const currentHour = now().hour();
     if (currentDay >= 5 || currentDay == 0) {
-        throw INVALID_APPLY_TIME;
+        throw INVALID_APPLY_DAY;
     }
     if (currentHour < 9 || currentHour >= 21) {
         throw INVALID_APPLY_TIME;
