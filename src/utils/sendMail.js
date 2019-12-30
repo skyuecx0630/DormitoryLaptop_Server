@@ -1,18 +1,20 @@
 import nodemailer from 'nodemailer';
-import smtpTransporter from 'nodemailer-smtp-transport';
 
 import dotenv from 'dotenv';
 dotenv.config();
 
 // SMTP 메일 설정
-const smtpTransport = nodemailer.createTransport(smtpTransporter({
-    host: 'smtp.gmail.com',
-    secure: true,
+const smtpTransport = nodemailer.createTransport({
+    service: "gmail",
     auth: {
+        type: 'OAuth2',
         user: process.env.EMAIL_ID,
-        pass: process.env.EMAIL_PASSWORD
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+        accessToken: process.env.ACCESS_TOKEN
     }
-}));
+});
 
 // 회원가입 시 이메일 인증을 위한 메일 발송
 export const sendRegisterEmail = (email, key_for_verify) => {
@@ -20,8 +22,8 @@ export const sendRegisterEmail = (email, key_for_verify) => {
 
     const mailOpt = {
         from: {
-            name: '빈실',
-            address: process.env.EMAIL_ID
+            name: "빈실",
+            address: process.env.EMAIL_ID,
         },
         to: email,
         subject: '이메일 인증을 진행하여주세요',
@@ -29,11 +31,8 @@ export const sendRegisterEmail = (email, key_for_verify) => {
     };
 
     smtpTransport.sendMail(mailOpt, (err, res) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(`Register - 이메일 전송에 성공하였습니다. 이메일 : ${email}`);
-        }
+        if (err)
+            console.log(err)
         smtpTransport.close();
     });
 }
